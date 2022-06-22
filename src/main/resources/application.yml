@@ -7,7 +7,9 @@ spring:
     name: blog
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    username: root
-    password: root
+    username: blog
+    password: blog
     url: jdbc:mysql://localhost:3306/blog?useSSL=false
     driver-class-name: com.mysql.cj.jdbc.Driver
+mybatis:
+  mapper-locations: classpath:/mapper/**/*.xml
