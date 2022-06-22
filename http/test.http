@@ -1,11 +1,4 @@
-GET http://localhost/hello
-Accept: application/json
-
-###
-
-POST http://localhost:80/hello
-Content-Type: application/x-www-form-urlencoded
-
-name=test&password=test
+GET http://localhost/test/get/1
+#Accept: application/json
 
 ###

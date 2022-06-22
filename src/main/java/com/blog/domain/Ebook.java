@@ -90,4 +90,19 @@ public class Ebook {
     public void setVoteCount(Integer voteCount) {
         this.voteCount = voteCount;
     }
+
+    @Override
+    public String toString() {
+        return "Ebook{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", category1Id=" + category1Id +
+                ", category2Id=" + category2Id +
+                ", description='" + description + '\'' +
+                ", cover='" + cover + '\'' +
+                ", docCount=" + docCount +
+                ", viewCount=" + viewCount +
+                ", voteCount=" + voteCount +
+                '}';
+    }
 }

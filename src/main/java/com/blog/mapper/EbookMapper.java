@@ -2,10 +2,12 @@ package com.blog.mapper;
 
 import com.blog.domain.Ebook;
 import com.blog.domain.EbookExample;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+@Mapper
 public interface EbookMapper {
     int countByExample(EbookExample example);
 

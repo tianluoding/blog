@@ -30,4 +30,13 @@ public class Test {
     public void setPassword(String password) {
         this.password = password == null ? null : password.trim();
     }
+
+    @Override
+    public String toString() {
+        return "Test{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }

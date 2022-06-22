@@ -2,10 +2,12 @@ package com.blog.mapper;
 
 import com.blog.domain.Test;
 import com.blog.domain.TestExample;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+@Mapper
 public interface TestMapper {
     int countByExample(TestExample example);
 
