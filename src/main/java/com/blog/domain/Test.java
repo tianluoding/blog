@@ -1,6 +1,8 @@
 package com.blog.domain;
 
-public class Test {
+import java.io.Serializable;
+
+public class Test implements Serializable {
     private Long id;
 
     private String name;

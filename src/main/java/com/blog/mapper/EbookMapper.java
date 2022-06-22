@@ -1,5 +1,6 @@
 package com.blog.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.blog.domain.Ebook;
 import com.blog.domain.EbookExample;
 import org.apache.ibatis.annotations.Mapper;
@@ -8,14 +9,12 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 @Mapper
-public interface EbookMapper {
+public interface EbookMapper extends BaseMapper<Ebook> {
     int countByExample(EbookExample example);
 
     int deleteByExample(EbookExample example);
 
     int deleteByPrimaryKey(Long id);
-
-    int insert(Ebook record);
 
     int insertSelective(Ebook record);
 
