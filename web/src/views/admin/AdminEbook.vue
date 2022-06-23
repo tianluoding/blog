@@ -67,7 +67,7 @@ export default defineComponent({
     const pagination = ref({
       current: 1,
       pageSize: 2,
-      total: 4
+      total: 0
     });
     const loading = ref(false);
 
@@ -119,7 +119,7 @@ export default defineComponent({
         ebooks.value = data.data.records;
 
         pagination.value.current = params.page;
-        // pagination.value.total = data.data.records.length;
+        pagination.value.total = data.data.total;
         console.log(pagination.value.total);
       });
     };
