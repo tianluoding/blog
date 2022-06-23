@@ -1,7 +1,13 @@
 <template>
   <a-layout>
     <a-layout-content :style="{background: '#fff', padding: '24px', margin: 0, minHeight: '280px'}">
-      <a-table :columns="columns" :data-source="ebooks">
+      <a-table
+        :columns="columns"
+        :data-source="ebooks"
+        :pagination="pagination"
+        :loading="loading"
+        @change="handleTableChange"
+      >
         <template #headerCell="{ column }">
           <template v-if="column.key === 'name'">
             <span>
@@ -20,9 +26,7 @@
           <template v-if="column.key === 'categoryId2'">
             <a>{{ record.categoryId2 }}</a>
           </template>
-          <template v-if="column.key === 'description'">
-            {{ record.description }}
-          </template>
+          <template v-if="column.key === 'description'">{{ record.description }}</template>
           <template v-else-if="column.key === 'tags'">
             <span>
               <a-tag
@@ -49,6 +53,7 @@
 <script lang="ts">
 import { SmileOutlined, DownOutlined } from "@ant-design/icons-vue";
 import { defineComponent, onMounted, ref } from "vue";
+
 import axios from "axios";
 
 export default defineComponent({
@@ -61,8 +66,8 @@ export default defineComponent({
     const ebooks = ref();
     const pagination = ref({
       current: 1,
-      pageSize: 1,
-      total: 0
+      pageSize: 2,
+      total: 4
     });
     const loading = ref(false);
 
@@ -75,17 +80,17 @@ export default defineComponent({
       {
         title: "分类1",
         dataIndex: "categoryId1",
-        key: "categoryId1",
+        key: "categoryId1"
       },
       {
         title: "分类2",
         dataIndex: "categoryId2",
-        key: "categoryId2",
+        key: "categoryId2"
       },
       {
         title: "描述",
         dataIndex: "description",
-        key: "description",
+        key: "description"
       },
       {
         title: "Tags",
@@ -103,12 +108,19 @@ export default defineComponent({
      */
     const handleQuery = (params: any) => {
       loading.value = true;
-      axios.get("/ebook/list", params).then((response) => {
+      axios.get("/ebook/page", {
+        params: {
+          page: params.page,
+          pageSize: params.pageSize
+        }
+      }).then(response => {
         loading.value = false;
         const data = response.data;
-        ebooks.value = data.data;
+        ebooks.value = data.data.records;
 
         pagination.value.current = params.page;
+        // pagination.value.total = data.data.records.length;
+        console.log(pagination.value.total);
       });
     };
 
@@ -119,12 +131,15 @@ export default defineComponent({
       console.log("分页参数: " + pagination);
       handleQuery({
         page: pagination.current,
-        size: pagination.pageSize
+        pageSize: pagination.pageSize
       });
     };
 
     onMounted(() => {
-      handleQuery({});
+      handleQuery({
+          page: pagination.value.current,
+          pageSize: pagination.value.pageSize
+      });
     });
 
     return {
