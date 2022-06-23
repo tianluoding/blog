@@ -117,12 +117,9 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      console.log("onMounted");
       axios.get("/ebook/list").then(repsonse => {
         const data = repsonse.data;
         ebooks.value = data.data;
-
-        console.log(repsonse);
       });
     });
 
