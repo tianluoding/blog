@@ -45,20 +45,19 @@
                 :confirm-loading="confirmLoading"
                 @ok="handleOk"
               >
-                <a-form :model="ebook" :label-col="{span: 5}" >
+                <a-form :model="ebook" :label-col="{span: 5}">
                   <a-form-item label="名称">
                     <a-input v-model:value="ebook.name" placeholder="input placeholder" />
                   </a-form-item>
                   <a-form-item label="分类1">
-                    <a-input v-model:value="ebook.categoryId1" placeholder="input placeholder" />
+                    <a-input v-model:value="ebook.category1Id" placeholder="input placeholder" />
                   </a-form-item>
                   <a-form-item label="分类2">
-                    <a-input v-model:value="ebook.categoryId2" placeholder="input placeholder" />
+                    <a-input v-model:value="ebook.category2Id" placeholder="input placeholder" />
                   </a-form-item>
                   <a-form-item label="描述">
                     <a-input v-model:value="ebook.description" placeholder="input placeholder" />
                   </a-form-item>
-                  
                 </a-form>
               </a-modal>
               <a-divider type="vertical" />
@@ -101,13 +100,13 @@ export default defineComponent({
       },
       {
         title: "分类1",
-        dataIndex: "categoryId1",
-        key: "categoryId1"
+        dataIndex: "category1Id",
+        key: "category1Id"
       },
       {
         title: "分类2",
-        dataIndex: "categoryId2",
-        key: "categoryId2"
+        dataIndex: "category2Id",
+        key: "category2Id"
       },
       {
         title: "描述",
@@ -171,12 +170,20 @@ export default defineComponent({
     const confirmLoading = ref<boolean>(false);
 
     const handleOk = () => {
-      modalText.value = "The modal will be closed after two seconds";
       confirmLoading.value = true;
-      setTimeout(() => {
-        visible.value = false;
-        confirmLoading.value = false;
-      }, 2000);
+      axios.post("/ebook/save", ebook.value).then(response => {
+        const data = response.data;
+        if (data.code == 1) {
+          visible.value = false;
+          confirmLoading.value = false;
+
+          // 重新加载列表
+          handleQuery({
+            page: pagination.value.current,
+            pageSize: pagination.value.pageSize,
+          })
+        }
+      });
     };
 
     /**

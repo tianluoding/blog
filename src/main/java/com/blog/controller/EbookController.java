@@ -6,9 +6,7 @@ import com.blog.resp.CommonResp;
 import com.blog.service.EbookService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,5 +30,11 @@ public class EbookController {
         //LambdaQueryWrapper<Ebook> queryWrapper = new LambdaQueryWrapper<>();
         ebookService.page(pageInfo);
         return CommonResp.success(pageInfo);
+    }
+
+    @PostMapping("/save")
+    public CommonResp<String> save(@RequestBody Ebook ebook){
+        ebookService.saveOrUpdate(ebook);
+        return CommonResp.success("编程电子书成功");
     }
 }
