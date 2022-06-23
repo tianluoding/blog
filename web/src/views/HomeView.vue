@@ -47,26 +47,36 @@
           </a-menu>
         </a-layout-sider>
         <a-layout-content :style="{ padding: '0 24px', minHeight: '280px' }">
-          Content
+          <pre>{{ebooks}}</pre>
         </a-layout-content>
       </a-layout>
     </a-layout-content>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import axios from 'axios';
 // import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 
 export default defineComponent({
   name: 'HomeView',
   setup() {
-    console.log("setup")
-    axios.get("http://localhost/ebook/list").then(
-      (repsonse) => {
+    console.log("setup");
+    const ebooks = ref();
+
+    onMounted(() => {
+      console.log("onMounted");
+      axios.get("http://localhost/ebook/list").then((repsonse) => {
+        const data = repsonse.data;
+        ebooks.value = data.data;
+
         console.log(repsonse);
-      }
-    )
+      });
+    })
+
+    return {
+      ebooks
+    }
   }
 });
 </script>
