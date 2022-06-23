@@ -38,7 +38,15 @@
           </template>
           <template v-else-if="column.key === 'action'">
             <span>
-              <a-button type="primary">编辑</a-button>
+              <a-button type="primary" @click="showModal">编辑</a-button>
+              <a-modal
+                v-model:visible="visible"
+                title="Title"
+                :confirm-loading="confirmLoading"
+                @ok="handleOk"
+              >
+                <p>{{ modalText }}</p>
+              </a-modal>
               <a-divider type="vertical" />
               <a-button type="danger">删除</a-button>
               <a-divider type="vertical" />
@@ -108,20 +116,22 @@ export default defineComponent({
      */
     const handleQuery = (params: any) => {
       loading.value = true;
-      axios.get("/ebook/page", {
-        params: {
-          page: params.page,
-          pageSize: params.pageSize
-        }
-      }).then(response => {
-        loading.value = false;
-        const data = response.data;
-        ebooks.value = data.data.records;
+      axios
+        .get("/ebook/page", {
+          params: {
+            page: params.page,
+            pageSize: params.pageSize
+          }
+        })
+        .then(response => {
+          loading.value = false;
+          const data = response.data;
+          ebooks.value = data.data.records;
 
-        pagination.value.current = params.page;
-        pagination.value.total = data.data.total;
-        console.log(pagination.value.total);
-      });
+          pagination.value.current = params.page;
+          pagination.value.total = data.data.total;
+          console.log(pagination.value.total);
+        });
     };
 
     /**
@@ -137,12 +147,34 @@ export default defineComponent({
 
     onMounted(() => {
       handleQuery({
-          page: pagination.value.current,
-          pageSize: pagination.value.pageSize
+        page: pagination.value.current,
+        pageSize: pagination.value.pageSize
       });
     });
 
+    const modalText = ref<string>('Content of the modal');
+    const visible = ref<boolean>(false);
+    const confirmLoading = ref<boolean>(false);
+
+    const showModal = () => {
+      visible.value = true;
+    };
+
+    const handleOk = () => {
+      modalText.value = 'The modal will be closed after two seconds';
+      confirmLoading.value = true;
+      setTimeout(() => {
+        visible.value = false;
+        confirmLoading.value = false;
+      }, 2000);
+    };
+
     return {
+      modalText,
+      visible,
+      confirmLoading,
+      showModal,
+      handleOk,
       ebooks,
       pagination,
       columns,

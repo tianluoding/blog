@@ -28,7 +28,7 @@ public class EbookController {
     @GetMapping("/page")
     public  CommonResp<Page> page(int page, int pageSize) {
         Page pageInfo = new Page(page, pageSize);
-        log.info("{}: {}", page, pageSize);
+//        log.info("{}: {}", page, pageSize);
         //LambdaQueryWrapper<Ebook> queryWrapper = new LambdaQueryWrapper<>();
         ebookService.page(pageInfo);
         return CommonResp.success(pageInfo);
