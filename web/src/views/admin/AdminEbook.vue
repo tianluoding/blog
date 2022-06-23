@@ -38,14 +38,28 @@
           </template>
           <template v-else-if="column.key === 'action'">
             <span>
-              <a-button type="primary" @click="showModal">编辑</a-button>
+              <a-button type="primary" @click="edit(record)">编辑</a-button>
               <a-modal
                 v-model:visible="visible"
                 title="Title"
                 :confirm-loading="confirmLoading"
                 @ok="handleOk"
               >
-                <p>{{ modalText }}</p>
+                <a-form :model="ebook" :label-col="{span: 5}" >
+                  <a-form-item label="名称">
+                    <a-input v-model:value="ebook.name" placeholder="input placeholder" />
+                  </a-form-item>
+                  <a-form-item label="分类1">
+                    <a-input v-model:value="ebook.categoryId1" placeholder="input placeholder" />
+                  </a-form-item>
+                  <a-form-item label="分类2">
+                    <a-input v-model:value="ebook.categoryId2" placeholder="input placeholder" />
+                  </a-form-item>
+                  <a-form-item label="描述">
+                    <a-input v-model:value="ebook.description" placeholder="input placeholder" />
+                  </a-form-item>
+                  
+                </a-form>
               </a-modal>
               <a-divider type="vertical" />
               <a-button type="danger">删除</a-button>
@@ -152,16 +166,12 @@ export default defineComponent({
       });
     });
 
-    const modalText = ref<string>('Content of the modal');
+    const modalText = ref<string>("Content of the modal");
     const visible = ref<boolean>(false);
     const confirmLoading = ref<boolean>(false);
 
-    const showModal = () => {
-      visible.value = true;
-    };
-
     const handleOk = () => {
-      modalText.value = 'The modal will be closed after two seconds';
+      modalText.value = "The modal will be closed after two seconds";
       confirmLoading.value = true;
       setTimeout(() => {
         visible.value = false;
@@ -169,11 +179,21 @@ export default defineComponent({
       }, 2000);
     };
 
+    /**
+     * 表单
+     */
+    const ebook = ref({});
+    const edit = (record: any) => {
+      visible.value = true;
+      ebook.value = record;
+    };
+
     return {
       modalText,
       visible,
       confirmLoading,
-      showModal,
+      edit,
+      ebook,
       handleOk,
       ebooks,
       pagination,
