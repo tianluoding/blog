@@ -34,7 +34,12 @@ public class EbookController {
 
     @PostMapping("/save")
     public CommonResp<String> save(@RequestBody Ebook ebook){
-        ebookService.saveOrUpdate(ebook);
-        return CommonResp.success("编程电子书成功");
+        if(ebook.getId() == null){
+            ebookService.save(ebook);
+            return CommonResp.success("新增成功");
+        }else{
+            ebookService.saveOrUpdate(ebook);
+            return CommonResp.success("编辑电子书成功");
+        }
     }
 }

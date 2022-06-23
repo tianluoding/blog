@@ -1,41 +1,27 @@
 <template>
   <a-layout>
     <a-layout-content :style="{background: '#fff', padding: '24px', margin: 0, minHeight: '280px'}">
+      <p>
+        <a-button type="primary" @click="add()" size="large">新增</a-button>
+      </p>
       <a-table
         :columns="columns"
-        :data-source="ebooks"
+        :data-source="categories"
         :pagination="pagination"
         :loading="loading"
         @change="handleTableChange"
       >
         <template #headerCell="{ column }">
           <template v-if="column.key === 'name'">
-            <span>
-              <smile-outlined />Name
-            </span>
+            <span>名称</span>
           </template>
         </template>
 
         <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'name'">
-            <a>{{ record.name }}</a>
-          </template>
-          <template v-if="column.key === 'categoryId1'">
-            <a>{{ record.categoryId1 }}</a>
-          </template>
-          <template v-if="column.key === 'categoryId2'">
-            <a>{{ record.categoryId2 }}</a>
-          </template>
-          <template v-if="column.key === 'description'">{{ record.description }}</template>
-          <template v-else-if="column.key === 'tags'">
-            <span>
-              <a-tag
-                v-for="tag in record.tags"
-                :key="tag"
-                :color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'"
-              >{{ tag.toUpperCase() }}</a-tag>
-            </span>
-          </template>
+          <template v-if="column.key === 'name'">{{ record.name }}</template>
+          <template v-if="column.key === 'parent'">{{record.parent}}</template>
+          <template v-if="column.key === 'sort'">{{record.sort}}</template>
+
           <template v-else-if="column.key === 'action'">
             <span>
               <a-button type="primary" @click="edit(record)">编辑</a-button>
@@ -45,18 +31,15 @@
                 :confirm-loading="confirmLoading"
                 @ok="handleOk"
               >
-                <a-form :model="ebook" :label-col="{span: 5}">
+                <a-form :model="ebook" :label-col="{span: 2}">
                   <a-form-item label="名称">
                     <a-input v-model:value="ebook.name" placeholder="input placeholder" />
                   </a-form-item>
-                  <a-form-item label="分类1">
-                    <a-input v-model:value="ebook.category1Id" placeholder="input placeholder" />
+                  <a-form-item label="父分类">
+                    <a-input v-model:value="ebook.parent" placeholder="input placeholder" />
                   </a-form-item>
-                  <a-form-item label="分类2">
-                    <a-input v-model:value="ebook.category2Id" placeholder="input placeholder" />
-                  </a-form-item>
-                  <a-form-item label="描述">
-                    <a-input v-model:value="ebook.description" placeholder="input placeholder" />
+                  <a-form-item label="顺序">
+                    <a-input v-model:value="ebook.sort" placeholder="input placeholder" />
                   </a-form-item>
                 </a-form>
               </a-modal>
@@ -78,13 +61,13 @@ import { defineComponent, onMounted, ref } from "vue";
 import axios from "axios";
 
 export default defineComponent({
-  name: "AdminEbook",
+  name: "AdminCategory",
   components: {
     SmileOutlined,
     DownOutlined
   },
   setup() {
-    const ebooks = ref();
+    const categories = ref();
     const pagination = ref({
       current: 1,
       pageSize: 5,
@@ -94,29 +77,19 @@ export default defineComponent({
 
     const columns = [
       {
-        name: "名称",
+        title: "名称",
         dataIndex: "name",
         key: "name"
       },
       {
-        title: "分类1",
-        dataIndex: "category1Id",
-        key: "category1Id"
+        title: "父分类",
+        dataIndex: "parent",
+        key: "parent"
       },
       {
-        title: "分类2",
-        dataIndex: "category2Id",
-        key: "category2Id"
-      },
-      {
-        title: "描述",
-        dataIndex: "description",
-        key: "description"
-      },
-      {
-        title: "Tags",
-        key: "tags",
-        dataIndex: "tags"
+        title: "顺序",
+        dataIndex: "sort",
+        key: "sort"
       },
       {
         title: "Action",
@@ -130,7 +103,7 @@ export default defineComponent({
     const handleQuery = (params: any) => {
       loading.value = true;
       axios
-        .get("/ebook/page", {
+        .get("/category/page", {
           params: {
             page: params.page,
             pageSize: params.pageSize
@@ -139,7 +112,7 @@ export default defineComponent({
         .then(response => {
           loading.value = false;
           const data = response.data;
-          ebooks.value = data.data.records;
+          categories.value = data.data.records;
 
           pagination.value.current = params.page;
           pagination.value.total = data.data.total;
@@ -171,7 +144,7 @@ export default defineComponent({
 
     const handleOk = () => {
       confirmLoading.value = true;
-      axios.post("/ebook/save", ebook.value).then(response => {
+      axios.post("/category/save", ebook.value).then(response => {
         const data = response.data;
         if (data.code == 1) {
           visible.value = false;
@@ -180,8 +153,8 @@ export default defineComponent({
           // 重新加载列表
           handleQuery({
             page: pagination.value.current,
-            pageSize: pagination.value.pageSize,
-          })
+            pageSize: pagination.value.pageSize
+          });
         }
       });
     };
@@ -194,15 +167,20 @@ export default defineComponent({
       visible.value = true;
       ebook.value = record;
     };
+    const add = () => {
+      visible.value = true;
+      ebook.value = {};
+    };
 
     return {
       modalText,
       visible,
       confirmLoading,
       edit,
+      add,
       ebook,
       handleOk,
-      ebooks,
+      categories,
       pagination,
       columns,
       loading,
