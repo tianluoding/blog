@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/category")
@@ -21,6 +22,12 @@ public class CategoryController {
         Page pageInfo = new Page(pageReq.getPage(), pageReq.getPageSize());
         categoryService.page(pageInfo);
         return CommonResp.success(pageInfo);
+    }
+
+    @GetMapping("/list")
+    public CommonResp<List<Category>> list(){
+        List<Category> categories = categoryService.list();
+        return CommonResp.success(categories);
     }
 
     @PostMapping("/save")

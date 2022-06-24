@@ -7,9 +7,8 @@
       <a-table
         :columns="columns"
         :data-source="categories"
-        :pagination="pagination"
         :loading="loading"
-        @change="handleTableChange"
+        :pagination="false"
       >
         <template #headerCell="{ column }">
           <template v-if="column.key === 'name'">
@@ -76,11 +75,6 @@ export default defineComponent({
   },
   setup() {
     const categories = ref();
-    const pagination = ref({
-      current: 1,
-      pageSize: 5,
-      total: 0
-    });
     const loading = ref(false);
 
     const columns = [
@@ -108,46 +102,24 @@ export default defineComponent({
     /**
      * 数据查询
      */
-    const handleQuery = (params: any) => {
+    const handleQuery = () => {
       loading.value = true;
       axios
-        .get("/category/page", {
-          params: {
-            page: params.page,
-            pageSize: params.pageSize
-          }
-        })
+        .get("/category/list")
         .then(response => {
           loading.value = false;
           const data = response.data;
           if (data.code == 1) {
-            categories.value = data.data.records;
-
-            pagination.value.current = params.page;
-            pagination.value.total = data.data.total;
-            console.log(pagination.value.total);
+            categories.value = data.data;
           } else {
             message.error(data.msg);
           }
         });
     };
 
-    /**
-     * 表格点击页码时触发
-     */
-    const handleTableChange = (pagination: any) => {
-      console.log("分页参数: " + pagination);
-      handleQuery({
-        page: pagination.current,
-        pageSize: pagination.pageSize
-      });
-    };
 
     onMounted(() => {
-      handleQuery({
-        page: pagination.value.current,
-        pageSize: pagination.value.pageSize
-      });
+        handleQuery({});
     });
 
     const modalText = ref<string>("Content of the modal");
@@ -163,10 +135,7 @@ export default defineComponent({
           confirmLoading.value = false;
 
           // 重新加载列表
-          handleQuery({
-            page: pagination.value.current,
-            pageSize: pagination.value.pageSize
-          });
+          handleQuery();
         }
       });
     };
@@ -176,10 +145,7 @@ export default defineComponent({
         const data = response.data;
         if (data.code == 1) {
           // 重新加载列表
-          handleQuery({
-            page: pagination.value.current,
-            pageSize: pagination.value.pageSize
-          });
+          handleQuery();
         }
       });
     };
@@ -208,10 +174,8 @@ export default defineComponent({
 
       handleDeleteOk,
       categories,
-      pagination,
       columns,
       loading,
-      handleTableChange
     };
   }
 });
