@@ -6,7 +6,7 @@
       </p>
       <a-table
         :columns="columns"
-        :data-source="categories"
+        :data-source="level1"
         :loading="loading"
         :pagination="false"
       >
@@ -66,6 +66,7 @@ import { defineComponent, onMounted, ref } from "vue";
 
 import axios from "axios";
 import { message } from "ant-design-vue";
+import { Tool } from "@/util/tool"
 
 export default defineComponent({
   name: "AdminCategory",
@@ -102,6 +103,7 @@ export default defineComponent({
     /**
      * 数据查询
      */
+    const level1 = ref()
     const handleQuery = () => {
       loading.value = true;
       axios
@@ -110,7 +112,9 @@ export default defineComponent({
           loading.value = false;
           const data = response.data;
           if (data.code == 1) {
-            categories.value = data.data;
+              categories.value = data.data;
+              level1.value = [];
+              level1.value = Tool.array2Tree(categories.value, 0);
           } else {
             message.error(data.msg);
           }
@@ -119,7 +123,7 @@ export default defineComponent({
 
 
     onMounted(() => {
-        handleQuery({});
+        handleQuery();
     });
 
     const modalText = ref<string>("Content of the modal");
@@ -173,7 +177,8 @@ export default defineComponent({
       handleOk,
 
       handleDeleteOk,
-      categories,
+        categories,
+      level1,
       columns,
       loading,
     };
