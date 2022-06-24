@@ -19,7 +19,6 @@ public class CategoryController {
     @GetMapping("/page")
     public  CommonResp<Page> page(@Valid PageReq pageReq) {
         Page pageInfo = new Page(pageReq.getPage(), pageReq.getPageSize());
-
         categoryService.page(pageInfo);
         return CommonResp.success(pageInfo);
     }

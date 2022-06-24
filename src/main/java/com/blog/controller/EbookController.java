@@ -1,5 +1,6 @@
 package com.blog.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.blog.domain.Ebook;
 import com.blog.req.PageReq;
@@ -28,7 +29,9 @@ public class EbookController {
     @GetMapping("/page")
     public CommonResp<Page> page(@Valid PageReq pageReq) {
         Page pageInfo = new Page(pageReq.getPage(), pageReq.getPageSize());
-        ebookService.page(pageInfo);
+        LambdaQueryWrapper<Ebook> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(pageReq.getName() != null, Ebook::getName, pageReq.getName());
+        ebookService.page(pageInfo, queryWrapper);
         return CommonResp.success(pageInfo);
     }
 

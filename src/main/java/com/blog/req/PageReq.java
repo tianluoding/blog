@@ -11,6 +11,25 @@ public class PageReq {
     @Max(value = 1000, message = "【每页条数】不能超过1000")
     private int pageSize;
 
+    private String name;
+
+    @Override
+    public String toString() {
+        return "PageReq{" +
+                "page=" + page +
+                ", pageSize=" + pageSize +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public int getPage() {
         return page;
     }
@@ -25,13 +44,6 @@ public class PageReq {
 
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
-    }
-    @Override
-    public String toString() {
-        return "PageReq{" +
-                "page=" + page +
-                ", pageSize=" + pageSize +
-                '}';
     }
 
 }

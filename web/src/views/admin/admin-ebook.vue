@@ -31,9 +31,22 @@
         :confirm-loading="confirmDeleteLoading"
         @ok="handleDeleteOk"
       ></a-modal>
-      <p>
-        <a-button type="primary" @click="add()" size="large">新增</a-button>
-      </p>
+
+      <a-form layout="inline">
+        <a-form-item>
+          <a-input v-model:value="name" placeholder="search">
+            <template #prefix>
+              <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
+            </template>
+          </a-input>
+        </a-form-item>
+        <a-form-item>
+          <a-button type="primary" html-type="submit" @click="handleSearch(pagination, name)">搜索</a-button>
+        </a-form-item>
+        <a-form-item>
+          <a-button type="primary" @click="add()">新增</a-button>
+        </a-form-item>
+      </a-form>
       <a-table
         :columns="columns"
         :data-source="ebooks"
@@ -148,6 +161,7 @@ export default defineComponent({
       }
     ];
 
+    const name = ref();
     /**
      * 数据查询
      */
@@ -157,7 +171,8 @@ export default defineComponent({
         .get("/ebook/page", {
           params: {
             page: params.page,
-            pageSize: params.pageSize
+            pageSize: params.pageSize,
+            name: params.name
           }
         })
         .then(response => {
@@ -183,6 +198,16 @@ export default defineComponent({
       handleQuery({
         page: pagination.current,
         pageSize: pagination.pageSize
+      });
+    };
+    /**
+     * 按名称模糊搜索
+     */
+    const handleSearch = (pagination: any, name: any) => {
+      handleQuery({
+        page: pagination.current,
+        pageSize: pagination.pageSize,
+        name: name
       });
     };
 
@@ -248,6 +273,7 @@ export default defineComponent({
       edit,
       add,
       ebook,
+      name,
       handleOk,
       ebooks,
 
@@ -256,7 +282,8 @@ export default defineComponent({
       pagination,
       columns,
       loading,
-      handleTableChange
+      handleTableChange,
+      handleSearch
     };
   }
 });
