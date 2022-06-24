@@ -21,8 +21,10 @@ public class EbookController {
     private EbookService ebookService;
 
     @GetMapping("/list")
-    public CommonResp<List<Ebook>> list() {
-        List<Ebook> ebookList = ebookService.list();
+    public CommonResp<List<Ebook>> list(int page, int pageSize, Long categoryId2) {
+        LambdaQueryWrapper<Ebook> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Ebook::getCategory2Id, categoryId2);
+        List<Ebook> ebookList = ebookService.list(queryWrapper);
         return CommonResp.success(ebookList);
     }
 
