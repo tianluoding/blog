@@ -5,17 +5,14 @@
         <a-button type="primary" @click="add()" size="large">新增</a-button>
       </p>
       <a-table
+        v-if="level1.length > 0"
         :columns="columns"
         :data-source="level1"
+        :row-key="record => record.id"
         :loading="loading"
         :pagination="false"
+        :defaultExpandAllRows="false"
       >
-        <template #headerCell="{ column }">
-          <template v-if="column.key === 'name'">
-            <span>名称</span>
-          </template>
-        </template>
-
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'name'">{{ record.name }}</template>
           <template v-if="column.key === 'parent'">{{record.parent}}</template>
@@ -32,13 +29,21 @@
               >
                 <a-form :model="ebook" :label-col="{span: 2}">
                   <a-form-item label="名称">
-                    <a-input v-model:value="ebook.name" placeholder="input placeholder" />
+                    <a-input v-model:value="ebook.name"/>
                   </a-form-item>
                   <a-form-item label="父分类">
-                    <a-input v-model:value="ebook.parent" placeholder="input placeholder" />
+                    <a-select v-model:value="ebook.parent" ref="select">
+                      <a-select-option :value="0">无</a-select-option>
+                      <a-select-option
+                        v-for="c in level1"
+                        :key="c.id"
+                        :value="c.id"
+                        :disabled="ebook.id === c.id"
+                      >{{c.name}}</a-select-option>
+                    </a-select>
                   </a-form-item>
                   <a-form-item label="顺序">
-                    <a-input v-model:value="ebook.sort" placeholder="input placeholder" />
+                    <a-input v-model:value="ebook.sort"/>
                   </a-form-item>
                 </a-form>
               </a-modal>
@@ -66,7 +71,7 @@ import { defineComponent, onMounted, ref } from "vue";
 
 import axios from "axios";
 import { message } from "ant-design-vue";
-import { Tool } from "@/util/tool"
+import { Tool } from "@/util/tool";
 
 export default defineComponent({
   name: "AdminCategory",
@@ -103,27 +108,25 @@ export default defineComponent({
     /**
      * 数据查询
      */
-    const level1 = ref()
+    const level1 = ref();
+    level1.value = [];
     const handleQuery = () => {
       loading.value = true;
-      axios
-        .get("/category/list")
-        .then(response => {
-          loading.value = false;
-          const data = response.data;
-          if (data.code == 1) {
-              categories.value = data.data;
-              level1.value = [];
-              level1.value = Tool.array2Tree(categories.value, 0);
-          } else {
-            message.error(data.msg);
-          }
-        });
+      axios.get("/category/list").then(response => {
+        loading.value = false;
+        const data = response.data;
+        if (data.code == 1) {
+          categories.value = data.data;
+          level1.value = [];
+          level1.value = Tool.array2Tree(categories.value, 0);
+        } else {
+          message.error(data.msg);
+        }
+      });
     };
 
-
     onMounted(() => {
-        handleQuery();
+      handleQuery();
     });
 
     const modalText = ref<string>("Content of the modal");
@@ -177,10 +180,9 @@ export default defineComponent({
       handleOk,
 
       handleDeleteOk,
-        categories,
       level1,
       columns,
-      loading,
+      loading
     };
   }
 });

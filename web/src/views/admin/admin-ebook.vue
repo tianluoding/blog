@@ -9,28 +9,23 @@
       >
         <a-form :model="ebook" :label-col="{span: 5}">
           <a-form-item label="封面">
-            <a-input v-model:value="ebook.cover" placeholder="input placeholder" />
+            <a-input v-model:value="ebook.cover" />
           </a-form-item>
           <a-form-item label="名称">
-            <a-input v-model:value="ebook.name" placeholder="input placeholder" />
+            <a-input v-model:value="ebook.name" />
           </a-form-item>
-          <a-form-item label="分类1">
-            <a-input v-model:value="ebook.category1Id" placeholder="input placeholder" />
-          </a-form-item>
-          <a-form-item label="分类2">
-            <a-input v-model:value="ebook.category2Id" placeholder="input placeholder" />
+          <a-form-item label="分类">
+            <a-cascader
+              v-model:value="categoryIds"
+              :field-names="{ label: 'name', value: 'id', children: 'children' }"
+              :options="level1"
+            />
           </a-form-item>
           <a-form-item label="描述">
-            <a-input v-model:value="ebook.description" placeholder="input placeholder" />
+            <a-input v-model:value="ebook.description" />
           </a-form-item>
         </a-form>
       </a-modal>
-      <a-modal
-        v-model:visible="deleteVisible"
-        title="deleteEbook"
-        :confirm-loading="confirmDeleteLoading"
-        @ok="handleDeleteOk"
-      ></a-modal>
 
       <a-form layout="inline">
         <a-form-item>
@@ -69,18 +64,10 @@
           <template v-if="column.key === 'name'">
             <a>{{ record.name }}</a>
           </template>
-          <template v-if="column.key === 'category1Id'">{{ record.category1Id }}</template>
-          <template v-if="column.key === 'category2Id'">{{ record.category2Id }}</template>
-          <template v-if="column.key === 'description'">{{ record.description }}</template>
-          <template v-else-if="column.key === 'tags'">
-            <span>
-              <a-tag
-                v-for="tag in record.tags"
-                :key="tag"
-                :color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'"
-              >{{ tag.toUpperCase() }}</a-tag>
-            </span>
+          <template v-if="column.key === 'category'">
+            <span>{{ getCategoryName(record.category1Id) }} / {{ getCategoryName(record.category2Id) }}</span>
           </template>
+          <template v-if="column.key === 'description'">{{ record.description }}</template>
           <template v-else-if="column.key === 'action'">
             <span>
               <a-button type="primary" @click="edit(record)">编辑</a-button>
@@ -106,6 +93,7 @@
 import { SmileOutlined, DownOutlined } from "@ant-design/icons-vue";
 import { defineComponent, onMounted, ref } from "vue";
 import { message } from "ant-design-vue";
+import { Tool } from "@/util/tool";
 
 import axios from "axios";
 
@@ -136,14 +124,9 @@ export default defineComponent({
         key: "name"
       },
       {
-        title: "分类1",
-        dataIndex: "category1Id",
-        key: "category1Id"
-      },
-      {
-        title: "分类2",
-        dataIndex: "category2Id",
-        key: "category2Id"
+        title: "分类",
+        dataIndex: "category",
+        key: "category"
       },
       {
         title: "描述",
@@ -151,17 +134,14 @@ export default defineComponent({
         key: "description"
       },
       {
-        title: "Tags",
-        key: "tags",
-        dataIndex: "tags"
-      },
-      {
         title: "Action",
         key: "action"
       }
     ];
 
-    const name = ref();
+    onMounted(() => {
+      handleQueryCategory();
+    });
     /**
      * 数据查询
      */
@@ -211,19 +191,16 @@ export default defineComponent({
       });
     };
 
-    onMounted(() => {
-      handleQuery({
-        page: pagination.value.current,
-        pageSize: pagination.value.pageSize
-      });
-    });
-
+    const categoryIds = ref();
+    const ebook: any = ref({});
     const modalText = ref<string>("Content of the modal");
     const visible = ref<boolean>(false);
     const confirmLoading = ref<boolean>(false);
 
     const handleOk = () => {
       confirmLoading.value = true;
+      ebook.value.category1Id = categoryIds.value[0];
+      ebook.value.category2Id = categoryIds.value[1];
       axios.post("/ebook/save", ebook.value).then(response => {
         const data = response.data;
         if (data.code == 1) {
@@ -256,14 +233,57 @@ export default defineComponent({
     /**
      * 表单
      */
-    const ebook = ref({});
+
     const edit = (record: any) => {
       visible.value = true;
       ebook.value = record;
+      categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id];
     };
     const add = () => {
       visible.value = true;
       ebook.value = {};
+    };
+
+    const level1 = ref();
+    level1.value = [];
+    let categorys: any;
+    /**
+     * 查询所有分类
+     **/
+    const handleQueryCategory = () => {
+      loading.value = true;
+      axios.get("/category/list").then(response => {
+        loading.value = false;
+        const data = response.data;
+        if (data.code == 1) {
+          categorys = data.data;
+          console.log("原始数组：", categorys);
+
+          level1.value = [];
+          level1.value = Tool.array2Tree(categorys, 0);
+          console.log("树形结构：", level1.value);
+
+          // 加载完分类后，再加载电子书，否则如果分类树加载很慢，则电子书渲染会报错
+          handleQuery({
+            page: pagination.value.current,
+            pageSize: pagination.value.pageSize
+          });
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
+
+    const getCategoryName = (cid: number) => {
+      // console.log(cid)
+      let result = "";
+      categorys.forEach((item: any) => {
+        if (item.id === cid) {
+          // return item.name; // 注意，这里直接return不起作用
+          result = item.name;
+        }
+      });
+      return result;
     };
 
     return {
@@ -283,7 +303,13 @@ export default defineComponent({
       columns,
       loading,
       handleTableChange,
-      handleSearch
+      handleSearch,
+
+      level1,
+      categorys,
+      categoryIds,
+
+      getCategoryName
     };
   }
 });
