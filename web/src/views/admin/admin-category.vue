@@ -66,6 +66,7 @@ import { SmileOutlined, DownOutlined } from "@ant-design/icons-vue";
 import { defineComponent, onMounted, ref } from "vue";
 
 import axios from "axios";
+import { message } from "ant-design-vue";
 
 export default defineComponent({
   name: "AdminCategory",
@@ -119,11 +120,15 @@ export default defineComponent({
         .then(response => {
           loading.value = false;
           const data = response.data;
-          categories.value = data.data.records;
+          if (data.code == 1) {
+            categories.value = data.data.records;
 
-          pagination.value.current = params.page;
-          pagination.value.total = data.data.total;
-          console.log(pagination.value.total);
+            pagination.value.current = params.page;
+            pagination.value.total = data.data.total;
+            console.log(pagination.value.total);
+          } else {
+            message.error(data.msg);
+          }
         });
     };
 

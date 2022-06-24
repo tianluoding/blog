@@ -1,10 +1,13 @@
 package com.blog.domain;
 
+import javax.validation.constraints.NotNull;
+
 public class Category {
     private Long id;
 
     private Long parent;
 
+    @NotNull(message = "名称不能为空")
     private String name;
 
     private Integer sort;

@@ -92,6 +92,7 @@
 <script lang="ts">
 import { SmileOutlined, DownOutlined } from "@ant-design/icons-vue";
 import { defineComponent, onMounted, ref } from "vue";
+import { message } from "ant-design-vue";
 
 import axios from "axios";
 
@@ -162,11 +163,15 @@ export default defineComponent({
         .then(response => {
           loading.value = false;
           const data = response.data;
-          ebooks.value = data.data.records;
+          if (data.code == 1) {
+            ebooks.value = data.data.records;
 
-          pagination.value.current = params.page;
-          pagination.value.total = data.data.total;
-          console.log(pagination.value.total);
+            pagination.value.current = params.page;
+            pagination.value.total = data.data.total;
+            console.log(pagination.value.total);
+          } else {
+            message.error(data.msg);
+          }
         });
     };
 
@@ -205,16 +210,16 @@ export default defineComponent({
             page: pagination.value.current,
             pageSize: pagination.value.pageSize
           });
+        } else {
+          message.error(data.msg);
         }
       });
     };
-
 
     const handleDeleteOk = (id: string) => {
       axios.delete("/ebook/delete/" + id).then(response => {
         const data = response.data;
         if (data.code == 1) {
-
           // 重新加载列表
           handleQuery({
             page: pagination.value.current,
