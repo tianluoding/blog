@@ -44,7 +44,14 @@
                 </a-form>
               </a-modal>
               <a-divider type="vertical" />
-              <a-button type="danger">删除</a-button>
+              <a-popconfirm
+                title="删除后不可恢复，确认删除?"
+                ok-text="是"
+                cancel-text="否"
+                @confirm="handleDeleteOk(record.id)"
+              >
+                <a-button type="danger">删除</a-button>
+              </a-popconfirm>
               <a-divider type="vertical" />
             </span>
           </template>
@@ -159,6 +166,19 @@ export default defineComponent({
       });
     };
 
+    const handleDeleteOk = (id: string) => {
+      axios.delete("/category/delete/" + id).then(response => {
+        const data = response.data;
+        if (data.code == 1) {
+          // 重新加载列表
+          handleQuery({
+            page: pagination.value.current,
+            pageSize: pagination.value.pageSize
+          });
+        }
+      });
+    };
+
     /**
      * 表单
      */
@@ -180,6 +200,8 @@ export default defineComponent({
       add,
       ebook,
       handleOk,
+
+      handleDeleteOk,
       categories,
       pagination,
       columns,

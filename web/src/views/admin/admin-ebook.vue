@@ -25,6 +25,12 @@
           </a-form-item>
         </a-form>
       </a-modal>
+      <a-modal
+        v-model:visible="deleteVisible"
+        title="deleteEbook"
+        :confirm-loading="confirmDeleteLoading"
+        @ok="handleDeleteOk"
+      ></a-modal>
       <p>
         <a-button type="primary" @click="add()" size="large">新增</a-button>
       </p>
@@ -66,7 +72,14 @@
             <span>
               <a-button type="primary" @click="edit(record)">编辑</a-button>
               <a-divider type="vertical" />
-              <a-button type="danger">删除</a-button>
+              <a-popconfirm
+                title="删除后不可恢复，确认删除?"
+                ok-text="是"
+                cancel-text="否"
+                @confirm="handleDeleteOk(record.id)"
+              >
+                <a-button type="danger">删除</a-button>
+              </a-popconfirm>
               <a-divider type="vertical" />
             </span>
           </template>
@@ -196,6 +209,20 @@ export default defineComponent({
       });
     };
 
+
+    const handleDeleteOk = (id: string) => {
+      axios.delete("/ebook/delete/" + id).then(response => {
+        const data = response.data;
+        if (data.code == 1) {
+
+          // 重新加载列表
+          handleQuery({
+            page: pagination.value.current,
+            pageSize: pagination.value.pageSize
+          });
+        }
+      });
+    };
     /**
      * 表单
      */
@@ -218,6 +245,9 @@ export default defineComponent({
       ebook,
       handleOk,
       ebooks,
+
+      handleDeleteOk,
+
       pagination,
       columns,
       loading,

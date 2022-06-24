@@ -27,4 +27,10 @@ public class CategoryController {
         categoryService.saveOrUpdate(category);
         return CommonResp.success("编辑分类成功");
     }
+
+    @DeleteMapping("/delete/{id}")
+    public CommonResp<String> remove(@PathVariable String id){
+        categoryService.removeById(id);
+        return CommonResp.success("删除成功");
+    }
 }
