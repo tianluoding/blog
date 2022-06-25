@@ -1,5 +1,8 @@
 <template>
-  <a-layout-footer style="text-align: center">TLD's BLOG ©2022 欢迎:{{user.name}}</a-layout-footer>
+  <a-layout-footer style="text-align: center">
+    TLD's BLOG ©2022
+    <span v-show="user.id">欢迎:{{user.name}}</span>
+  </a-layout-footer>
 </template>
 
 <script lang="ts">

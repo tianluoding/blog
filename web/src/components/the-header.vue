@@ -51,9 +51,9 @@
     name: 'the-header',
     setup () {
       // 登录后保存
-      //const user = computed(() => store.state.user);
-      const user = ref();
-      user.value = {};
+      const user = computed(() => store.state.user);
+      //const user = ref();
+      //user.value = {};
 
       // 用来登录
       const loginUser = ref({
@@ -77,7 +77,6 @@
           if (data.code == 1) {
             loginModalVisible.value = false;
             message.success("登录成功！");
-            user.value = data.data;
             store.commit("setUser", data.data);
           } else {
             message.error(data.msg);
