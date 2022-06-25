@@ -4,8 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.blog.domain.User;
 import com.blog.exception.BusinessException;
 import com.blog.exception.BusinessExceptionCode;
+import com.blog.req.UserLoginReq;
 import com.blog.resp.CommonResp;
+import com.blog.resp.UserLoginResp;
 import com.blog.service.UserService;
+import com.blog.util.CopyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
@@ -52,5 +55,28 @@ public class UserController {
     public CommonResp<String> remove(@PathVariable String id) {
         userService.removeById(id);
         return CommonResp.success("删除成功");
+    }
+
+    @PostMapping("/login")
+    public CommonResp<UserLoginResp> login(UserLoginReq req){
+        User user = CopyUtil.copy(req, User.class);
+        user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes(StandardCharsets.UTF_8)));
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getLoginName, user.getLoginName());
+        User user1 = userService.getOne(queryWrapper);
+        if(user1 != null){
+            // 用户名存在
+            if(user1.getPassword().equals(user.getPassword())){
+                //登录成功
+                UserLoginResp userLoginResp = CopyUtil.copy(user1, UserLoginResp.class);
+                return CommonResp.success(userLoginResp);
+            }else{
+                //登录失败
+                throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+            }
+        }else{
+            // 用户名不存在
+            throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+        }
     }
 }
