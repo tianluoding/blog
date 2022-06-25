@@ -71,13 +71,13 @@
         axios.post('/user/login', loginUser.value).then((response) => {
           loginModalLoading.value = false;
           const data = response.data;
-          if (data.success) {
+          if (data.code == 1) {
             loginModalVisible.value = false;
             message.success("登录成功！");
 
-            store.commit("setUser", data.content);
+            store.commit("setUser", data.data);
           } else {
-            message.error(data.message);
+            message.error(data.msg);
           }
         });
       };

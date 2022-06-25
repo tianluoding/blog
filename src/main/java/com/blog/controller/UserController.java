@@ -58,7 +58,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public CommonResp<UserLoginResp> login(UserLoginReq req){
+    public CommonResp<UserLoginResp> login(@RequestBody UserLoginReq req){
         User user = CopyUtil.copy(req, User.class);
         user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes(StandardCharsets.UTF_8)));
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
