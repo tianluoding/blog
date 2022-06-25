@@ -1,7 +1,8 @@
 <template>
   <a-layout-header class="header">
     <div class="logo">TLD's BLOG</div>
-    <a class="login-menu" @click="showLoginModal">登录</a>
+    <a class="login-menu" v-show="user.id"><span>您好: {{user.name}}</span></a>
+    <a class="login-menu" @click="showLoginModal" v-show="!user.id"><span>登录</span></a>
     <a-menu theme="dark" mode="horizontal" :style="{ lineHeight: '64px' }">
       <a-menu-item key="、">
         <router-link to="/">首页</router-link>
@@ -51,6 +52,8 @@
     setup () {
       // 登录后保存
       //const user = computed(() => store.state.user);
+      const user = ref();
+      user.value = {};
 
       // 用来登录
       const loginUser = ref({
@@ -74,7 +77,7 @@
           if (data.code == 1) {
             loginModalVisible.value = false;
             message.success("登录成功！");
-
+            user.value = data.data;
             store.commit("setUser", data.data);
           } else {
             message.error(data.msg);
@@ -89,7 +92,7 @@
         showLoginModal,
         loginUser,
         login,
-        //user,
+        user,
         // logout
       }
     }
