@@ -41,6 +41,7 @@ public class UserController {
         }else{
             // 更新用户名不允许修改
             user.setLoginName(null);
+            user.setPassword(null);
             userService.updateById(user);
         }
 
