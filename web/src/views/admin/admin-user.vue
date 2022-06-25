@@ -7,15 +7,15 @@
         :confirm-loading="confirmLoading"
         @ok="handleOk"
       >
-        <a-form :model="ebook" :label-col="{span: 3}">
+        <a-form :model="user" :label-col="{span: 3}">
           <a-form-item label="登录名">
-            <a-input v-model:value="ebook.loginName" />
+            <a-input v-model:value="user.loginName" :disabled="!!user.id"/>
           </a-form-item>
           <a-form-item label="名称">
-            <a-input v-model:value="ebook.name" />
+            <a-input v-model:value="user.name" />
           </a-form-item>
           <a-form-item label="密码">
-            <a-input v-model:value="ebook.password" type="password" />
+            <a-input v-model:value="user.password" type="password" />
           </a-form-item>
         </a-form>
       </a-modal>
@@ -35,7 +35,7 @@
           <a-button type="primary" @click="add()">新增</a-button>
         </a-form-item>
       </a-form>
-      <a-table :columns="columns" :data-source="ebooks" :loading="loading">
+      <a-table :columns="columns" :data-source="users" :loading="loading">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'loginName'">{{record.loginName}}</template>
           <template v-if="column.key === 'name'">{{ record.name }}</template>
@@ -76,7 +76,7 @@ export default defineComponent({
     DownOutlined
   },
   setup() {
-    const ebooks = ref();
+    const users = ref();
     const pagination = ref({
       current: 1,
       pageSize: 5,
@@ -118,21 +118,21 @@ export default defineComponent({
         loading.value = false;
         const data = response.data;
         if (data.code == 1) {
-          ebooks.value = data.data;
+          users.value = data.data;
         } else {
           message.error(data.msg);
         }
       });
     };
 
-    const ebook: any = ref({});
+    const user: any = ref({});
     const modalText = ref<string>("Content of the modal");
     const visible = ref<boolean>(false);
     const confirmLoading = ref<boolean>(false);
 
     const handleOk = () => {
       confirmLoading.value = true;
-      axios.post("/user/save", ebook.value).then(response => {
+      axios.post("/user/save", user.value).then(response => {
         const data = response.data;
         if (data.code == 1) {
           visible.value = false;
@@ -164,11 +164,11 @@ export default defineComponent({
 
     const edit = (record: any) => {
       visible.value = true;
-      ebook.value = record;
+      user.value = record;
     };
     const add = () => {
       visible.value = true;
-      ebook.value = {};
+      user.value = {};
     };
 
     return {
@@ -177,9 +177,9 @@ export default defineComponent({
       confirmLoading,
       edit,
       add,
-      ebook,
+      user,
       handleOk,
-      ebooks,
+      users,
 
       handleDeleteOk,
 

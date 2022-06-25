@@ -36,6 +36,8 @@ public class UserController {
                 throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
             }
         }else{
+            // 更新用户名不允许修改
+            user.setLoginName(null);
             userService.updateById(user);
         }
 
