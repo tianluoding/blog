@@ -13,6 +13,7 @@ import TheHeader from '@/components/the-header.vue';
 import TheFooter from '@/components/the-footer.vue';
 import { defineComponent } from 'vue';
 
+
 export default defineComponent({
   name: 'app',
   components: {

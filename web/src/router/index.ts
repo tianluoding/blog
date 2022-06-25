@@ -4,6 +4,7 @@ import AboutView from '../views/about-view.vue'
 import AdminEbook from '../views/admin/admin-ebook.vue'
 import AdminCategory from '../views/admin/admin-category.vue'
 import AdminUser from '../views/admin/admin-user.vue'
+import EditorView from '../views/editor-view.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -34,6 +35,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/admin/user',
     name: 'admin-user',
     component: AdminUser
+  },
+  {
+    path: '/editor',
+    name: 'editor',
+    component: EditorView
   }
 ]
 

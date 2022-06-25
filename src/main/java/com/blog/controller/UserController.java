@@ -96,4 +96,11 @@ public class UserController {
             throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
         }
     }
+
+    @GetMapping("/logout/{token}")
+    public CommonResp<String> logout(@PathVariable String token){
+        redisTemplate.delete(token);
+        log.info("从redis中删除token");
+        return CommonResp.success("退出登录成功");
+    }
 }

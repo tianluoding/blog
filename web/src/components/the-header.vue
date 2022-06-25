@@ -1,8 +1,10 @@
 <template>
   <a-layout-header class="header">
     <div class="logo">TLD's BLOG</div>
+    <a class="login-menu" @click="logout" v-show="user.id">退出登录</a>
     <a class="login-menu" v-show="user.id"><span>您好: {{user.name}}</span></a>
     <a class="login-menu" @click="showLoginModal" v-show="!user.id"><span>登录</span></a>
+    
     <a-menu theme="dark" mode="horizontal" :style="{ lineHeight: '64px' }">
       <a-menu-item key="、">
         <router-link to="/">首页</router-link>
@@ -83,7 +85,18 @@
           }
         });
       };
-
+      // 登出
+      const logout = () => {
+        axios.get('/user/logout/'+user.value.token).then((response) => {
+          const data = response.data;
+          if (data.code == 1) {
+            message.success("退出登录");
+            store.commit("setUser", {});
+          } else {
+            message.error(data.msg);
+          }
+        });
+      };
 
       return {
         loginModalVisible,
@@ -92,7 +105,7 @@
         loginUser,
         login,
         user,
-        // logout
+        logout
       }
     }
   });
@@ -112,5 +125,6 @@
 .login-menu {
   float: right;
   color: white;
+  padding-left: 10px;
 }
 </style>

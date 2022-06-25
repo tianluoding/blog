@@ -70,6 +70,10 @@
           <template v-if="column.key === 'description'">{{ record.description }}</template>
           <template v-else-if="column.key === 'action'">
             <span>
+              <a-button type="primary">
+                <router-link to="/editor">文本编辑</router-link>
+              </a-button>
+              <a-divider type="vertical" />
               <a-button type="primary" @click="edit(record)">编辑</a-button>
               <a-divider type="vertical" />
               <a-popconfirm
