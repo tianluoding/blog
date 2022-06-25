@@ -1,6 +1,9 @@
 package com.blog.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.blog.domain.User;
+import com.blog.exception.BusinessException;
+import com.blog.exception.BusinessExceptionCode;
 import com.blog.resp.CommonResp;
 import com.blog.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +25,20 @@ public class UserController {
 
     @PostMapping("/save")
     public CommonResp<String> save(@RequestBody User user){
-        userService.saveOrUpdate(user);
+        if(user.getId() == null){
+            LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(User::getLoginName, user.getLoginName());
+            User user1 = userService.getOne(queryWrapper);
+            if(user1 == null){
+                userService.save(user);
+            }else{
+                // 用户名已存在
+                throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
+            }
+        }else{
+            userService.updateById(user);
+        }
+
         return CommonResp.success("编辑成功");
     }
 
