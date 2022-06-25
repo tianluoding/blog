@@ -65,7 +65,9 @@
 import { SmileOutlined, DownOutlined } from "@ant-design/icons-vue";
 import { defineComponent, onMounted, ref } from "vue";
 import { message } from "ant-design-vue";
-import { Tool } from "@/util/tool";
+
+declare let hexMd5: any;
+declare let KEY: any;
 
 import axios from "axios";
 
@@ -131,7 +133,10 @@ export default defineComponent({
     const confirmLoading = ref<boolean>(false);
 
     const handleOk = () => {
-      confirmLoading.value = true;
+        confirmLoading.value = true;
+
+        user.value.password = hexMd5(user.value.password + KEY);
+      
       axios.post("/user/save", user.value).then(response => {
         const data = response.data;
         if (data.code == 1) {

@@ -7,8 +7,10 @@ import com.blog.exception.BusinessExceptionCode;
 import com.blog.resp.CommonResp;
 import com.blog.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -25,6 +27,7 @@ public class UserController {
 
     @PostMapping("/save")
     public CommonResp<String> save(@RequestBody User user){
+        user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes(StandardCharsets.UTF_8)));
         if(user.getId() == null){
             LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(User::getLoginName, user.getLoginName());
