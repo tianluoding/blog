@@ -9,18 +9,26 @@ import com.blog.resp.CommonResp;
 import com.blog.resp.UserLoginResp;
 import com.blog.service.UserService;
 import com.blog.util.CopyUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @RestController
 @RequestMapping("/user")
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @GetMapping("/list")
     public CommonResp<List<User>> list(){
@@ -69,6 +77,15 @@ public class UserController {
             if(user1.getPassword().equals(user.getPassword())){
                 //登录成功
                 UserLoginResp userLoginResp = CopyUtil.copy(user1, UserLoginResp.class);
+
+                //token写入redis
+                String token = UUID.randomUUID().toString().replaceAll("-", "");
+                userLoginResp.setToken(token);
+
+                redisTemplate.opsForValue().set(token, userLoginResp, 3600*24, TimeUnit.SECONDS);
+
+                log.info("token is: {}", token);
+
                 return CommonResp.success(userLoginResp);
             }else{
                 //登录失败

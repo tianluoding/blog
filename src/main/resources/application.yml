@@ -11,6 +11,12 @@ spring:
     password: blog
     url: jdbc:mysql://localhost:3306/blog?useSSL=false&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  redis:
+    host: localhost
+    port: 6379
+    #password:
+    database: 0
 mybatis:
   mapper-locations: classpath:/mapper/**/*.xml
 mybatis-plus:
