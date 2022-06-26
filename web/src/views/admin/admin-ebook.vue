@@ -71,7 +71,7 @@
           <template v-else-if="column.key === 'action'">
             <span>
               <a-button type="primary">
-                <router-link to="/editor">文本编辑</router-link>
+                <router-link :to="'/editor/' + record.id">文本编辑</router-link>
               </a-button>
               <a-divider type="vertical" />
               <a-button type="primary" @click="edit(record)">编辑</a-button>

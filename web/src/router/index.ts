@@ -37,7 +37,7 @@ const routes: Array<RouteRecordRaw> = [
     component: AdminUser
   },
   {
-    path: '/editor',
+    path: '/editor/:id',
     name: 'editor',
     component: EditorView
   }
