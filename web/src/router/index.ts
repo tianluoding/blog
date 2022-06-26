@@ -5,6 +5,7 @@ import AdminEbook from '../views/admin/admin-ebook.vue'
 import AdminCategory from '../views/admin/admin-category.vue'
 import AdminUser from '../views/admin/admin-user.vue'
 import EditorView from '../views/editor-view.vue'
+import ContentView from '../views/content-view.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -40,6 +41,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/editor/:id',
     name: 'editor',
     component: EditorView
+  },
+  {
+    path: '/content/:id',
+    name: 'content',
+    component: ContentView
   }
 ]
 
