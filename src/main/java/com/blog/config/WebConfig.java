@@ -1,11 +1,14 @@
 package com.blog.config;
 
+import com.blog.Interceptor.LoginInterceptor;
 import com.blog.util.JacksonObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
@@ -42,4 +45,20 @@ public class WebConfig implements WebMvcConfigurer {
 //        registry.addInterceptor(logInterceptor)
 //                .addPathPatterns("/**");
 //    }
+
+    @Autowired
+    LoginInterceptor loginInterceptor;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(loginInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns(
+                        "/test/**",
+                        "/user/login",
+                        "/category/list",
+                        "/ebook/list",
+                        "/content/**"
+                );
+    }
 }
