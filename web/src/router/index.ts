@@ -6,6 +6,8 @@ import AdminCategory from '../views/admin/admin-category.vue'
 import AdminUser from '../views/admin/admin-user.vue'
 import EditorView from '../views/editor-view.vue'
 import ContentView from '../views/content-view.vue'
+import { Tool } from '@/util/tool'
+import store from '../store'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -25,17 +27,26 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/admin/ebook',
     name: 'admin-ebook',
-    component: AdminEbook
+    component: AdminEbook,
+    meta: {
+      loginRequire: true
+    }
   },
   {
     path: '/admin/category',
     name: 'admin-category',
-    component: AdminCategory
+    component: AdminCategory,
+    meta: {
+      loginRequire: true
+    }
   },
   {
     path: '/admin/user',
     name: 'admin-user',
-    component: AdminUser
+    component: AdminUser,
+    meta: {
+      loginRequire: true
+    }
   },
   {
     path: '/editor/:id',
@@ -52,6 +63,22 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+
+// 路由登录拦截
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(function (item) {
+    return item.meta.loginRequire
+  })) {
+    const loginUser = store.state.user;
+    if (Tool.isEmpty(loginUser)) {
+      next('/');
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
 })
 
 export default router
