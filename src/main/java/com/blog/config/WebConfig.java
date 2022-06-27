@@ -57,7 +57,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "/test/**",
                         "/user/login",
                         "/category/list",
-                        "/ebook/list",
+                        "/ebook/**",
                         "/content/**"
                 );
     }

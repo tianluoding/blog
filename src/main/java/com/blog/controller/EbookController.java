@@ -1,6 +1,7 @@
 package com.blog.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.blog.domain.Ebook;
 import com.blog.req.PageReq;
@@ -19,6 +20,12 @@ import java.util.List;
 public class EbookController {
     @Autowired
     private EbookService ebookService;
+
+    @GetMapping("/{id}")
+    public CommonResp<Ebook> get(@PathVariable String id){
+        Ebook ebook = ebookService.getById(id);
+        return CommonResp.success(ebook);
+    }
 
     @GetMapping("/list")
     public CommonResp<List<Ebook>> list(int page, int pageSize, Long categoryId2) {
@@ -49,5 +56,14 @@ public class EbookController {
     public CommonResp<String> remove(@PathVariable String id) {
         ebookService.removeById(id);
         return CommonResp.success("删除成功");
+    }
+
+    @GetMapping("/vote/{id}")
+    public CommonResp<String> vote(@PathVariable String id){
+        UpdateWrapper<Ebook> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", id).setSql("vote_count = vote_count + 1");
+
+        ebookService.update(updateWrapper);
+        return CommonResp.success("点赞成功");
     }
 }
