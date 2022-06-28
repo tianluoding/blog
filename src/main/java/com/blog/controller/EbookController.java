@@ -7,11 +7,12 @@ import com.blog.domain.Ebook;
 import com.blog.req.PageReq;
 import com.blog.resp.CommonResp;
 import com.blog.service.EbookService;
-import com.blog.service.WebSocketService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -22,8 +23,8 @@ public class EbookController {
     @Autowired
     private EbookService ebookService;
 
-    @Autowired
-    private WebSocketService webSocketService;
+    @Resource
+    private RocketMQTemplate rocketMQTemplate;
 
     @GetMapping("/{id}")
     public CommonResp<Ebook> get(@PathVariable String id){
@@ -71,7 +72,7 @@ public class EbookController {
 
         Ebook ebook = ebookService.getById(id);
 
-        webSocketService.sendInfo("【" + ebook.getName() + "】" + "被点赞");
+        rocketMQTemplate.convertAndSend("VOTE_TOPIC", "【" + ebook.getName() + "】" + "被点赞");
         return CommonResp.success("点赞成功");
     }
 
