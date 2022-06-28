@@ -7,7 +7,7 @@ import com.blog.domain.Ebook;
 import com.blog.req.PageReq;
 import com.blog.resp.CommonResp;
 import com.blog.service.EbookService;
-import com.blog.websocket.WebSocketServer;
+import com.blog.service.WebSocketService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +23,7 @@ public class EbookController {
     private EbookService ebookService;
 
     @Autowired
-    private WebSocketServer webSocketServer;
+    private WebSocketService webSocketService;
 
     @GetMapping("/{id}")
     public CommonResp<Ebook> get(@PathVariable String id){
@@ -69,9 +69,10 @@ public class EbookController {
 
         ebookService.update(updateWrapper);
 
-        //推送消息
         Ebook ebook = ebookService.getById(id);
-        webSocketServer.sendInfo("【" + ebook.getName() + "】" + "被点赞");
+
+        webSocketService.sendInfo("【" + ebook.getName() + "】" + "被点赞");
         return CommonResp.success("点赞成功");
     }
+
 }

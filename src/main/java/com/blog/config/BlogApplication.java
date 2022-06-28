@@ -6,10 +6,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @ComponentScan("com.blog")
 @MapperScan("com.blog.mapper")
+@EnableAsync
 @Slf4j
 public class BlogApplication {
 
